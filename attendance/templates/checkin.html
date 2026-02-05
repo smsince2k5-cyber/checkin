@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Employee Check-In</title>
+<style>
+body { font-family: Arial; background: linear-gradient(135deg,#ece9e6,#ffffff); display:flex; justify-content:center; align-items:center; height:100vh;}
+.card { background: rgba(255,255,255,0.25); border-radius: 15px; backdrop-filter: blur(10px); padding: 40px; width:400px; text-align:center;}
+input, button { margin:10px 0; padding:10px; border-radius:5px; border:none;}
+button { background: linear-gradient(45deg,#6a11cb,#2575fc); color:white; cursor:pointer;}
+video { width:100%; border-radius:10px; margin:10px 0;}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Employee Check-In</h2>
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<video id="video" autoplay></video>
+<input type="hidden" name="face_image_data" id="face_image_data">
+<button type="submit">Check In</button>
+</form>
+{% for message in messages %}<p>{{ message }}</p>{% endfor %}
+<script>
+const video = document.getElementById('video');
+navigator.mediaDevices.getUserMedia({video:true})
+.then(stream => {video.srcObject = stream;});
+
+document.querySelector('form').addEventListener('submit', async e=>{
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  document.getElementById('face_image_data').value = canvas.toDataURL('image/jpeg');
+});
+</script>
+</div>
+</body>
+</html>

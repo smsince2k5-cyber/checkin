@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Employee Attendance System</title>
+<style>
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #ece9e6, #ffffff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2.2em;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px 50px;
+    width: 300px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.button {
+    display: block;
+    margin: 15px auto;
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    color: #fff;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-decoration: none;
+}
+
+.button:hover {
+    background: linear-gradient(45deg, #2575fc, #6a11cb);
+}
+
+.footer {
+    margin-top: 40px;
+    font-size: 0.9em;
+    color: #555;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Employee Attendance System</h1>
+
+    <div class="card">
+        <a href="{% url 'enroll_employee' %}" class="button">Enroll Employee</a>
+        <a href="{% url 'checkin' %}" class="button">Check-In</a>
+        <a href="{% url 'checkout' %}" class="button">Check-Out</a>
+    </div>
+
+    <div class="footer">
+        &copy; {{ year }} Company Name. All rights reserved.
+    </div>
+</div>
+
+</body>
+</html>
