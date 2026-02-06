@@ -44,3 +44,27 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee.name} - {self.date}"
+
+
+import random
+from datetime import timedelta
+from django.db import models
+from django.utils import timezone
+
+
+class OTP(models.Model):
+    phone = models.CharField(max_length=15)
+    code = models.CharField(max_length=4)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    def is_expired(self):
+        return timezone.now() > self.created_at + timedelta(seconds=60)
+
+    @staticmethod
+    def generate_otp():
+        return str(random.randint(1000, 9999))
+
+    def __str__(self):
+        return f"{self.phone} - {self.code}"
+

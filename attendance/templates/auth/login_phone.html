@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Login</title>
+<style>
+/* ===== GLOBAL ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(15deg, #391166, #126799, #41f7f7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ===== LOGIN CARD ===== */
+.login-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    width: 360px;
+    max-width: 90%;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+}
+
+/* ===== HEADER ===== */
+.login-card h2 {
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    color: #ffffff;
+}
+
+/* ===== INPUTS ===== */
+input[type="text"] {
+    width: 100%;
+    padding: 14px 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+}
+
+/* ===== BUTTON ===== */
+button {
+    width: 100%;
+    padding: 14px 0;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(45deg, #08963c, #22c55e);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #22c55e, #16a34a);
+    transform: translateY(-2px);
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    color: #dddddd;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 400px) {
+    .login-card {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>Employee Login</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="phone" placeholder="Enter phone number" required>
+        <button type="submit">Send OTP</button>
+    </form>
+
+    <div class="footer">
+        &copy; {{ year }} Company Name
+    </div>
+</div>
+
+</body>
+</html>

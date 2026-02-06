@@ -152,3 +152,109 @@ def check_out(request):
     else:
         form = CheckOutForm()
     return render(request, 'checkout.html', {'form': form})
+
+from datetime import date
+import calendar
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Employee, Attendance, OTP
+from .utils import send_otp_email, mask_email
+
+# ---------- LOGIN VIA PHONE ----------
+def login_phone(request):
+    if request.method == "POST":
+        phone = request.POST.get("phone")
+        try:
+            employee = Employee.objects.get(phone=phone)
+        except Employee.DoesNotExist:
+            messages.error(request, "Phone number not registered")
+            return redirect("login_phone")
+
+        OTP.objects.filter(phone=phone).delete()
+        otp_code = OTP.generate_otp()
+        OTP.objects.create(phone=phone, code=otp_code)
+
+        send_otp_email(employee.email, otp_code)
+
+        request.session["phone"] = phone
+        request.session["masked_email"] = mask_email(employee.email)
+
+        return redirect("verify_otp")
+
+    return render(request, "auth/login_phone.html")
+
+
+# ---------- VERIFY OTP ----------
+def verify_otp(request):
+    phone = request.session.get("phone")
+    masked_email = request.session.get("masked_email")
+    if not phone:
+        return redirect("login_phone")
+
+    if request.method == "POST":
+        entered_otp = request.POST.get("otp")
+        try:
+            otp_obj = OTP.objects.get(phone=phone, code=entered_otp, is_verified=False)
+        except OTP.DoesNotExist:
+            messages.error(request, "Invalid OTP")
+            return redirect("verify_otp")
+
+        if otp_obj.is_expired():
+            messages.error(request, "OTP expired")
+            return redirect("login_phone")
+
+        otp_obj.is_verified = True
+        otp_obj.save()
+
+        employee = Employee.objects.get(phone=phone)
+        request.session["employee_id"] = employee.id
+
+        return redirect("attendance_calendar", emp_id=employee.emp_id)
+
+    return render(request, "auth/verify_otp.html", {"masked_email": masked_email})
+
+
+# ---------- ATTENDANCE CALENDAR ----------
+def attendance_calendar(request, emp_id):
+    if not request.session.get("employee_id"):
+        return redirect("login_phone")
+
+    employee = get_object_or_404(Employee, emp_id=emp_id)
+
+    year = int(request.GET.get("year", date.today().year))
+    month = int(request.GET.get("month", date.today().month))
+
+    first_day = date(year, month, 1)
+    last_day = date(year, month, calendar.monthrange(year, month)[1])
+
+    attendance_qs = Attendance.objects.filter(employee=employee, date__range=(first_day, last_day))
+    attendance_map = {att.date: att for att in attendance_qs}
+
+    cal = calendar.Calendar(calendar.SUNDAY)
+    month_days = []
+    for week in cal.monthdatescalendar(year, month):
+        week_data = []
+        for day in week:
+            week_data.append({"date": day, "attendance": attendance_map.get(day)} if day.month == month else None)
+        month_days.append(week_data)
+
+    working_days = sum(1 for d in calendar.Calendar().itermonthdates(year, month) if d.month == month and d.weekday() < 5)
+    worked_days = attendance_qs.filter(check_in__isnull=False, check_out__isnull=False).count()
+    leave_days = attendance_qs.filter(status__iexact="Leave").count()
+    holidays = attendance_qs.filter(status__iexact="Holiday").count()
+    payable_days = worked_days + leave_days + holidays
+
+    context = {
+        "employee": employee,
+        "month_days": month_days,
+        "month": month,
+        "year": year,
+        "month_name": calendar.month_name[month],
+        "working_days": working_days,
+        "worked_days": worked_days,
+        "leave_days": leave_days,
+        "holidays": holidays,
+        "payable_days": payable_days,
+    }
+
+    return render(request, "calendar.html", context)

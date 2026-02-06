@@ -4,37 +4,156 @@
 <meta charset="UTF-8">
 <title>Employee Check-In</title>
 <style>
-body { font-family: Arial; background: linear-gradient(135deg,#ece9e6,#ffffff); display:flex; justify-content:center; align-items:center; height:100vh;}
-.card { background: rgba(255,255,255,0.25); border-radius: 15px; backdrop-filter: blur(10px); padding: 40px; width:400px; text-align:center;}
-input, button { margin:10px 0; padding:10px; border-radius:5px; border:none;}
-button { background: linear-gradient(45deg,#6a11cb,#2575fc); color:white; cursor:pointer;}
-video { width:100%; border-radius:10px; margin:10px 0;}
+/* ===== GLOBAL STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     background: linear-gradient(15deg, #391166, #126799, #41f7f7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ===== GLASSMORPHISM CARD ===== */
+.card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===== HEADINGS ===== */
+.card h2 {
+    margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* ===== FORM ELEMENTS ===== */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Input Fields */
+input[type="text"], input[type="email"], input[type="password"], input[type="hidden"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(5px);
+    transition: background 0.3s ease;
+    text-align: center;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* Button Styles */button {
+    width: 100%;
+    padding: 12px 0;
+    margin-top: 15px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(45deg, #11998e, #38ef7d);
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background: linear-gradient(45deg, #38ef7d, #11998e,);
+    transform: scale(1.05);
+}
+
+/* Video Preview */
+video {
+    width: 100%;
+    border-radius: 12px;
+    margin: 15px 0;
+    border: 2px solid rgba(255,255,255,0.3);
+    display: block;
+}
+
+/* Messages */
+p {
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 8px;
+    color: #fff;
+    margin-top: 10px;
+    font-size: 14px;
+    width: 100%;
+    text-align: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 450px) {
+    .card {
+        width: 90%;
+        padding: 30px 20px;
+    }
+    .card h2 {
+        font-size: 24px;
+    }
+}
 </style>
 </head>
 <body>
+
 <div class="card">
-<h2>Employee Check-In</h2>
-<form method="post">
-{% csrf_token %}
-{{ form.as_p }}
-<video id="video" autoplay></video>
-<input type="hidden" name="face_image_data" id="face_image_data">
-<button type="submit">Check In</button>
-</form>
-{% for message in messages %}<p>{{ message }}</p>{% endfor %}
+    <h2>Employee Check-In</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <video id="video" autoplay></video>
+        <input type="hidden" name="face_image_data" id="face_image_data">
+        <button type="submit">Check In</button>
+    </form>
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+
 <script>
 const video = document.getElementById('video');
 navigator.mediaDevices.getUserMedia({video:true})
-.then(stream => {video.srcObject = stream;});
+.then(stream => { video.srcObject = stream; });
 
 document.querySelector('form').addEventListener('submit', async e=>{
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  canvas.getContext('2d').drawImage(video,0,0);
-  document.getElementById('face_image_data').value = canvas.toDataURL('image/jpeg');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    document.getElementById('face_image_data').value = canvas.toDataURL('image/jpeg');
 });
 </script>
-</div>
+
 </body>
 </html>

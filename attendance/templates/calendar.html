@@ -1,0 +1,313 @@
+{% comment %} <h2>{{ month_name }} {{ year }}</h2>
+
+<table border="1" cellpadding="8">
+    <thead>
+        <tr>
+            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th>
+            <th>Thu</th><th>Fri</th><th>Sat</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in month_days %}
+        <tr>
+            {% for day in week %}
+            {{day.name}}
+                {% if day %}
+                    <td>
+                        <strong>{{ day.date.day }}</strong><br>
+
+                        {% if day.attendance %}
+                            {% if day.attendance.status == "Leave" %}
+                                <span style="color:green;">Leave</span>
+                            {% elif day.attendance.status == "Holiday" %}
+                                <span style="color:blue;">Holiday</span>
+                            {% else %}
+                                <small>In: {{ day.attendance.check_in }}</small><br>
+                                <small>Out: {{ day.attendance.check_out }}</small>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<hr>
+
+<h3>Attendance Summary</h3>
+<ul>
+    <li>Working Days: {{ working_days }}</li>
+    <li>Worked Days: {{ worked_days }}</li>
+    <li>Leave: {{ leave_days }}</li>
+    <li>Holidays: {{ holidays }}</li>
+    <li>Payable Days: {{ payable_days }}</li>
+</ul> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Calendar</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #f9fafb, #eef2f7);
+            color: #111827;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 24px;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow:
+                0 10px 25px rgba(0,0,0,0.04),
+                0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        /* ===== HEADER ===== */
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+
+        .calendar-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== TABLE ===== */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 6px;
+        }
+
+        th {
+            text-align: center;
+            padding: 10px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        td {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 10px;
+            height: 115px;
+            vertical-align: top;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        td:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+
+        .date {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* ===== TAGS ===== */
+        .tag {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 500;
+            padding: 5px 8px;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            width: fit-content;
+        }
+
+        .in {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .out {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .late {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .leave {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .holiday {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        /* ===== SUMMARY ===== */
+        .summary h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .summary-row span:last-child {
+            font-weight: 600;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ===== CALENDAR ===== -->
+    <div class="card">
+        <div class="calendar-header">
+            <h2>{{ month_name }} {{ year }}</h2>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for week in month_days %}
+                <tr>
+                    {% for day in week %}
+                        {% if day %}
+                        <td>
+                            <span class="date">{{ day.date.day }}</span>
+
+                            {% if day.attendance %}
+                                {% if day.attendance.status == "Leave" %}
+                                    <span class="tag leave">Leave</span>
+
+                                {% elif day.attendance.status == "Holiday" %}
+                                    <span class="tag holiday">Holiday</span>
+
+                                {% else %}
+                                    <span class="tag in">
+                                        {{ day.attendance.check_in }}
+                                    </span>
+
+                                    {% if day.attendance.status == "Late" %}
+                                        <span class="tag late">
+                                            {{ day.attendance.check_out }}
+                                        </span>
+                                    {% else %}
+                                        <span class="tag out">
+                                            {{ day.attendance.check_out }}
+                                        </span>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ===== SUMMARY ===== -->
+    <div class="card summary">
+        <h3>Attendance Summary</h3>
+
+        <div class="summary-row">
+            <span>Working Days</span>
+            <span>{{ working_days }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Worked Days</span>
+            <span>{{ worked_days }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Leave</span>
+            <span>{{ leave_days }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Holidays</span>
+            <span>{{ holidays }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Payable Days</span>
+            <span>{{ payable_days }}</span>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+ 
