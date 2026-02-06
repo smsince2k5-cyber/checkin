@@ -184,12 +184,43 @@ def login_phone(request):
     return render(request, "auth/login_phone.html")
 
 
-# ---------- VERIFY OTP ----------
+# # ---------- VERIFY OTP ----------
+# def verify_otp(request):
+#     phone = request.session.get("phone")
+#     masked_email = request.session.get("masked_email")
+#     if not phone:
+#         return redirect("login_phone")
+
+#     if request.method == "POST":
+#         entered_otp = request.POST.get("otp")
+#         try:
+#             otp_obj = OTP.objects.get(phone=phone, code=entered_otp, is_verified=False)
+#         except OTP.DoesNotExist:
+#             messages.error(request, "Invalid OTP")
+#             return redirect("verify_otp")
+
+#         if otp_obj.is_expired():
+#             messages.error(request, "OTP expired")
+#             return redirect("login_phone")
+
+#         otp_obj.is_verified = True
+#         otp_obj.save()
+
+#         employee = Employee.objects.get(phone=phone)
+#         request.session["employee_id"] = employee.id
+
+#         return redirect("attendance_calendar", emp_id=employee.emp_id)
+
+#     return render(request, "auth/verify_otp.html", {"masked_email": masked_email})
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import OTP, Employee
+
 def verify_otp(request):
     phone = request.session.get("phone")
     masked_email = request.session.get("masked_email")
     if not phone:
-        return redirect("login_phone")
+        return redirect("login_phone")  # Redirect if no phone in session
 
     if request.method == "POST":
         entered_otp = request.POST.get("otp")
@@ -206,6 +237,7 @@ def verify_otp(request):
         otp_obj.is_verified = True
         otp_obj.save()
 
+        # Mark employee as logged in
         employee = Employee.objects.get(phone=phone)
         request.session["employee_id"] = employee.id
 

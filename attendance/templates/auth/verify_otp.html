@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %} <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -100,6 +100,150 @@
         <button type="submit">Verify OTP</button>
     </form>
 </div>
+
+</body>
+</html> {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify OTP</title>
+<style>
+/* ===== GLOBAL STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Inter, sans-serif;
+    background: linear-gradient(15deg, #391166, #126799, #41f7f7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ===== CARD ===== */
+.card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===== HEADINGS ===== */
+h2 {
+    margin-bottom: 8px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.info {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 12px;
+    word-break: break-word;
+}
+
+/* ===== COUNTDOWN ===== */
+.countdown {
+    font-size: 16px;
+    font-weight: 600;
+    color: #facc15;
+    margin-bottom: 18px;
+}
+
+/* ===== INPUT ===== */
+input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 18px;
+    font-size: 18px;
+    text-align: center;
+    letter-spacing: 6px;
+}
+
+/* ===== BUTTON ===== */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #15803d;
+}
+
+button:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 400px) {
+    .card {
+        padding: 24px 16px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Enter OTP</h2>
+    <div class="info">
+        OTP sent to <strong>{{ masked_email }}</strong>
+    </div>
+
+    <!-- Countdown timer -->
+    <div class="countdown" id="countdown">Time remaining: 60s</div>
+
+    <form method="POST" id="otpForm">
+        {% csrf_token %}
+        <input type="text" name="otp" maxlength="4" placeholder="••••" required>
+        <button type="submit" id="verifyBtn">Verify OTP</button>
+    </form>
+</div>
+
+<script>
+// ===== COUNTDOWN LOGIC =====
+let timeLeft = 60; // 60 seconds
+const countdownEl = document.getElementById('countdown');
+const verifyBtn = document.getElementById('verifyBtn');
+
+const timer = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = `Time remaining: ${timeLeft}s`;
+
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        countdownEl.textContent = "OTP expired. Please request a new one.";
+        verifyBtn.disabled = true; // disable button
+    }
+}, 1000);
+</script>
 
 </body>
 </html>
