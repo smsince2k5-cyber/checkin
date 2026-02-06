@@ -148,11 +148,11 @@
             padding: 5px 8px;
             border-radius: 8px;
             margin-bottom: 6px;
-            width: fit-content;
+            
         }
 
         .in {
-            background: #fef3c7;
+            background: #fae386;
             color: #92400e;
         }
 
@@ -243,8 +243,7 @@
     <div class="card">
         <div class="calendar-header">
             <h2>{{ month_name }} {{ year }}</h2>
-        </div>
-
+        </div><h4 style="font-size:15px; color:green;">{{ employee.name|title }}  -  {{ employee.emp_id }}</h4>
         <table>
             <thead>
                 <tr>
@@ -257,7 +256,6 @@
                     <th>Sat</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for week in month_days %}
                 <tr>
