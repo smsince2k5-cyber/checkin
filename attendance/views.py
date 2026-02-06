@@ -1,21 +1,20 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Employee, Attendance
 from .forms import EmployeeForm, CheckInForm, CheckOutForm
-from datetime import datetime
 import base64
 import cv2
 import numpy as np
 from skimage.metrics import structural_similarity as ssim
-
-
-from django.shortcuts import render
 from datetime import datetime
+from datetime import date
+import calendar
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import *
+from .utils import send_otp_email, mask_email
 
 def home(request):
     return render(request, 'home.html', {'year': datetime.now().year})
-
-
 
 # Haar cascade for face detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -153,12 +152,7 @@ def check_out(request):
         form = CheckOutForm()
     return render(request, 'checkout.html', {'form': form})
 
-from datetime import date
-import calendar
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Employee, Attendance, OTP
-from .utils import send_otp_email, mask_email
+
 
 # ---------- LOGIN VIA PHONE ----------
 def login_phone(request):
